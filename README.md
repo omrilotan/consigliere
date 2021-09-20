@@ -15,6 +15,9 @@ logger.error(new Error('Something must have gone horribly wrong'))
 // {"message":"Something must have gone horribly wrong","stack":"Error: Something must have gone horribly wrong\n    at…","name":"Error","level":"error"}
 ```
 
+| ![](https://user-images.githubusercontent.com/516342/134087468-7c45d5c6-dd07-4428-b6b2-76133817fdd4.gif)
+| -
+
 ## Create new Logger instances
 
 ```js
