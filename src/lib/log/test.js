@@ -28,6 +28,13 @@ describe('lib/log', () => {
       key: 'Value'
     })
   })
+  it('Logs objects', () => {
+    log.call(context, { key: 'Value' })
+    deepEqual(lastLog(), {
+      level: 'info',
+      key: 'Value'
+    })
+  })
   it('Parses error and enrichment', () => {
     const error = new TypeError('Something must have gone horribly wrong')
     Object.defineProperties(error, {
@@ -51,12 +58,33 @@ describe('lib/log', () => {
       unregistered: 'Unregistered'
     })
   })
-  it('Coerces other things into strings', () => {
-    log.call(context, {}, { key: 'Value' })
+  it('Coerces arrays', () => {
+    log.call(context, [1, 2, 3])
     deepEqual(lastLog(), {
       level: 'info',
-      message: '[object Object]',
+      message: '1, 2, 3'
+    })
+  })
+  it('Coerces other things into strings', () => {
+    log.call(context, new Map(), { key: 'Value' })
+    deepEqual(lastLog(), {
+      level: 'info',
+      message: '[object Map]',
       key: 'Value'
+    })
+  })
+  it('Normalises nested fields', () => {
+    log.call(context, { key: { key: 'Value' } })
+    deepEqual(lastLog(), {
+      level: 'info',
+      key: '[object Object]'
+    })
+  })
+  it('Normalises array items', () => {
+    log.call(context, [{ key: 'Value' }, { key: 'Value' }])
+    deepEqual(lastLog(), {
+      level: 'info',
+      message: '[object Object], [object Object]'
     })
   })
 })
