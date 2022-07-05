@@ -1,4 +1,18 @@
-# 2022-03-17 0.2.2
+# CHANGELOG
 
-# Added functionality
-Log objects and arrays
+## 2022-07-05 0.3.0
+
+### Added functionality
+
+- Add parser functions to get the record in different formats
+- Expose record level to "device" and "parser" through "this" reference
+
+### Improvements
+
+- Improved object record values normalisation
+
+## 2022-03-17 0.2.2
+
+### Added functionality
+
+- Log objects and arrays

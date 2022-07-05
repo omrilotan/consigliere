@@ -1,34 +1,33 @@
 export const ERROR_FIELDS = [
-
   // Error native getters
-  'message',
-  'stack',
-  'code',
+  "message",
+  "stack",
+  "code",
 
   // inherited (not own property)
-  'name',
+  "name",
 
   // non standard browser fields
-  'fileName',
-  'lineNumber',
-  'columnNumber',
+  "fileName",
+  "lineNumber",
+  "columnNumber",
 
   // SystemError
-  'address',
-  'dest',
-  'errno',
-  'info',
-  'path',
-  'port',
-  'syscall',
+  "address",
+  "dest",
+  "errno",
+  "info",
+  "path",
+  "port",
+  "syscall",
 
   // OpenSSL error properties
-  'opensslErrorStack',
-  'function',
-  'library',
-  'reason',
+  "opensslErrorStack",
+  "function",
+  "library",
+  "reason",
 
   // custom
-  'details',
-  'description'
-]
+  "details",
+  "description",
+];

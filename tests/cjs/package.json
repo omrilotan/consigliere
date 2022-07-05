@@ -1,0 +1,10 @@
+{
+  "type": "commonjs",
+  "scripts": {
+    "pretest": "npm i",
+    "test": "node ."
+  },
+  "dependencies": {
+    "consigliere": "../.."
+  }
+}
