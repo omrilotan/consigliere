@@ -1,4 +1,5 @@
 import { log } from "../log/index.js";
+import { NORMALISE } from "../parsers/index.js";
 import { LEVELS } from "../levels/index.js";
 
 /**
@@ -10,17 +11,17 @@ export class Logger {
   #levels = LEVELS;
   #minimal = 0;
   #device = console.log;
-  #parser = "json";
+  #parser = NORMALISE;
   constructor({
     levels = LEVELS,
     level = levels.at(0),
     device = console.log,
-    parser = "json",
+    parser = NORMALISE,
   } = {}) {
     this.#setDevice(device);
     this.#setLevels(levels);
     this.#setLevel(level);
-    this.#parser = parser;
+    this.#setParser(parser);
 
     return new Proxy(this, {
       get(logger, prop) {
@@ -99,6 +100,15 @@ export class Logger {
     }
 
     this.#levels = levels;
+  }
+
+  #setParser(parser) {
+    if (parser !== false && typeof parser !== "function") {
+      throw new TypeError(
+        `parser must be a function or the boolean "false", instead got ${typeof parser} (${parser})`
+      );
+    }
+    this.#parser = parser;
   }
 
   #setDevice(device) {
