@@ -42,7 +42,7 @@ export class Logger {
               );
             }
             return levels.indexOf(prop) < logger.#minimal
-              ? () => undefined
+              ? () => Promise.resolve(undefined)
               : log.bind({ level: prop, device, parser: logger.#parser });
         }
       },

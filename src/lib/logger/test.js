@@ -28,15 +28,17 @@ describe("lib/logger", () => {
     logger.error("Hello", { key: "Value" });
     expect(console.log).toHaveBeenCalledTimes(2);
   });
-  it("uses alternative logging device", () => {
-    const alternative = jest.fn(() => 5);
+  it("uses alternative logging device (accepts promise)", async () => {
+    const alternative = jest.fn(async () => 5);
     const logger = new Logger({ level: "warn", device: alternative });
     const result1 = logger.debug("Hello", { key: "Value" });
     expect(alternative).toHaveBeenCalledTimes(0);
-    expect(result1).toBe(undefined);
+    expect(result1.constructor.name).toBe("Promise");
+    expect(await result1).toBe(undefined);
     const result2 = logger.warn("Hello", { key: "Value" });
     expect(alternative).toHaveBeenCalledTimes(1);
-    expect(result2).toBe(5);
+    expect(result2.constructor.name).toBe("Promise");
+    expect(await result2).toBe(5);
   });
   it("can change logger settings at runtime", () => {
     const logger = new Logger({ level: "warn" });
