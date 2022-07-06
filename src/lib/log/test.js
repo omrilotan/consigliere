@@ -1,90 +1,115 @@
 /* eslint-env mocha */
 
-import { called, deepEqual, mockConsole, restoreConsole } from '../../../specHelpers/index.js'
-import { log } from './index.js'
+import { jest } from "@jest/globals";
+import { log } from "./index.js";
+import { NORMALISE_VALUES, RAW } from "../parsers";
 
-const lastLog = () => JSON.parse(
-  called(console.log).at(-1).at(0)
-)
-const context = {}
+let logger;
 
-describe('lib/log', () => {
-  before(async () => {
-    mockConsole()
-    Object.assign(context, { level: 'info', device: console.log })
-  })
-  beforeEach(() => {
-    called()
-  })
-  after(() => {
-    called()
-    restoreConsole()
-  })
-  it('Logs string message and enrichment', () => {
-    log.call(context, 'Hello', { key: 'Value' })
-    deepEqual(lastLog(), {
-      level: 'info',
-      message: 'Hello',
-      key: 'Value'
-    })
-  })
-  it('Logs objects', () => {
-    log.call(context, { key: 'Value' })
-    deepEqual(lastLog(), {
-      level: 'info',
-      key: 'Value'
-    })
-  })
-  it('Parses error and enrichment', () => {
-    const error = new TypeError('Something must have gone horribly wrong')
+const lastLog = () => JSON.parse(console.log.mock.calls.at(-1).at(0));
+const context = (obj) =>
+  Object.assign(
+    {
+      level: "info",
+      device: console.log,
+    },
+    obj || {}
+  );
+
+describe("logger", () => {
+  beforeAll(async () => {
+    jest.spyOn(console, "log");
+  });
+  beforeEach(() => jest.resetAllMocks());
+  afterAll(() => jest.clearAllMocks());
+
+  it("Logs string message and enrichment", () => {
+    log.call(context(), "Hello", { key: "Value" });
+    expect(lastLog()).toEqual({
+      level: "info",
+      message: "Hello",
+      key: "Value",
+    });
+  });
+  it("Logs objects", () => {
+    log.call(context(), { key: "Value" });
+    expect(lastLog()).toEqual({
+      level: "info",
+      key: "Value",
+    });
+  });
+  it("Parses error and enrichment", () => {
+    const error = new TypeError("Something must have gone horribly wrong");
     Object.defineProperties(error, {
-      info: { get: () => 'Information', enumerable: false },
-      hidden: { get: () => 'Hidden', enumerable: false },
-      visible: { get: () => 'Visible', enumerable: true }
-
-    })
-    error.unregistered = 'Unregistered'
-
-    log.call(context, error, { key: 'Value' })
-
-    deepEqual(lastLog(), {
-      level: 'info',
-      message: 'Something must have gone horribly wrong',
-      name: 'TypeError',
+      info: { get: () => "Information", enumerable: false },
+      hidden: { get: () => "Hidden", enumerable: false },
+      visible: { get: () => "Visible", enumerable: true },
+    });
+    error.unregistered = "Unregistered";
+    log.call(context(), error, { key: "Value" });
+    expect(lastLog()).toEqual({
+      level: "info",
+      message: "Something must have gone horribly wrong",
+      name: "TypeError",
       stack: error.stack,
-      key: 'Value',
-      info: 'Information',
-      visible: 'Visible',
-      unregistered: 'Unregistered'
-    })
-  })
-  it('Coerces arrays', () => {
-    log.call(context, [1, 2, 3])
-    deepEqual(lastLog(), {
-      level: 'info',
-      message: '1, 2, 3'
-    })
-  })
-  it('Coerces other things into strings', () => {
-    log.call(context, new Map(), { key: 'Value' })
-    deepEqual(lastLog(), {
-      level: 'info',
-      message: '[object Map]',
-      key: 'Value'
-    })
-  })
-  it('Normalises nested fields', () => {
-    log.call(context, { key: { key: 'Value' } })
-    deepEqual(lastLog(), {
-      level: 'info',
-      key: '[object Object]'
-    })
-  })
-  it('Normalises array items', () => {
-    log.call(context, [{ key: 'Value' }, { key: 'Value' }])
-    deepEqual(lastLog(), {
-      level: 'info',
-      message: '[object Object], [object Object]'
-    })
-  })
-})
+      key: "Value",
+      info: "Information",
+      visible: "Visible",
+      unregistered: "Unregistered",
+    });
+  });
+  it("Coerces arrays", () => {
+    log.call(context(), [1, 2, 3]);
+    expect(lastLog()).toEqual({
+      level: "info",
+      message: "1, 2, 3",
+    });
+  });
+  it("Coerces other things into strings", () => {
+    log.call(
+      context(),
+      new Map([
+        ["a", 1],
+        ["b", 2],
+      ]),
+      { key: "Value" }
+    );
+    expect(lastLog()).toEqual({
+      level: "info",
+      message: "{}",
+      key: "Value",
+    });
+  });
+  it("Normalises nested fields", () => {
+    log.call(context(), { key: { key: "Value" } });
+    expect(lastLog()).toEqual({
+      level: "info",
+      key: {
+        key: "Value",
+      },
+    });
+  });
+  it("Normalises array items", () => {
+    log.call(context(), [{ key: "Value" }, { key: "Value" }]);
+    expect(lastLog()).toEqual({
+      level: "info",
+      message: "[object Object], [object Object]",
+    });
+  });
+  it("serves the raw record", () => {
+    const record = { key: "Value" };
+    log.call(context({ parser: RAW }), record);
+    expect(console.log.mock.calls.at(-1).at(0)).toEqual({
+      level: "info",
+      ...record,
+    });
+  });
+  it("serves the normalised record", () => {
+    log.call(context({ parser: NORMALISE_VALUES }), "hello", { key: "Value" });
+    expect(console.log.mock.calls.at(-1).at(0)).toEqual({
+      level: "info",
+      message: "hello",
+      key: "Value",
+    });
+  });
+});

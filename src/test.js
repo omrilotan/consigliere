@@ -1,42 +1,40 @@
 /* eslint-env mocha */
 
-import { called, equal, mockConsole, restoreConsole } from '../specHelpers/index.js'
+import { jest } from "@jest/globals";
+import { Logger } from "./lib/logger";
 
-let logger
+let logger;
+let mdl;
 
-const lastLog = () => JSON.parse(
-  called(console.log).at(-1).at(0)
-)
+const lastLog = () => JSON.parse(console.log.mock.calls.at(-1).at(0));
 
-describe('logger', () => {
-  before(async () => {
-    mockConsole()
-    const mdl = await import(`./index.js?${Date.now()}`)
-    ;({ logger } = mdl)
-  })
-  beforeEach(() => {
-    called()
-  })
-  after(() => {
-    called()
-    restoreConsole()
-  })
-  it('pass all levels for default logger', () => {
-    equal(called(console.log).length, 0)
-    logger.info('Hello', { key: 'Value' })
-    equal(called(console.log).length, 1)
-    equal(lastLog().level, 'info')
-    logger.debug('Hello', { key: 'Value' })
-    equal(called(console.log).length, 2)
-    equal(lastLog().level, 'debug')
-    logger.info('Hello', { key: 'Value' })
-    equal(called(console.log).length, 3)
-    equal(lastLog().level, 'info')
-    logger.warn('Hello', { key: 'Value' })
-    equal(called(console.log).length, 4)
-    equal(lastLog().level, 'warn')
-    logger.error('Hello', { key: 'Value' })
-    equal(called(console.log).length, 5)
-    equal(lastLog().level, 'error')
-  })
-})
+describe("logger", () => {
+  beforeAll(async () => {
+    jest.spyOn(console, "log");
+    mdl = await import(`./index.js?${Date.now()}`);
+    ({ logger } = mdl);
+  });
+  beforeEach(() => jest.resetAllMocks());
+  afterAll(() => jest.clearAllMocks());
+  it("exposes full interface", () => {
+    expect(Object.keys(mdl)).toMatchSnapshot();
+  });
+  it("pass all levels for default logger", () => {
+    expect(console.log).toHaveBeenCalledTimes(0);
+    logger.info("Hello", { key: "Value" });
+    expect(console.log).toHaveBeenCalledTimes(1);
+    expect(lastLog().level).toBe("info");
+    logger.debug("Hello", { key: "Value" });
+    expect(console.log).toHaveBeenCalledTimes(2);
+    expect(lastLog().level).toBe("debug");
+    logger.info("Hello", { key: "Value" });
+    expect(console.log).toHaveBeenCalledTimes(3);
+    expect(lastLog().level).toBe("info");
+    logger.warn("Hello", { key: "Value" });
+    expect(console.log).toHaveBeenCalledTimes(4);
+    expect(lastLog().level).toBe("warn");
+    logger.error("Hello", { key: "Value" });
+    expect(console.log).toHaveBeenCalledTimes(5);
+    expect(lastLog().level).toBe("error");
+  });
+});

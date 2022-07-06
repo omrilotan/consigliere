@@ -1,5 +1,6 @@
-import { Logger } from './lib/logger/index.js'
+import { Logger } from "./lib/logger/index.js";
+export * from "./lib/parsers/index.js";
 
-const logger = new Logger()
+const logger = new Logger();
 
-export { Logger, logger }
+export { Logger, logger };
