@@ -1,3 +1,5 @@
-import { logger } from "consigliere";
+import { equal } from "node:assert/strict";
+import { logger, RAW } from "consigliere";
 
-logger.info("Hello");
+logger.info("Hello, ESM");
+equal(typeof RAW, "function");
