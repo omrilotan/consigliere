@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## 2022-07-11 0.4.0
+
+### Added functionality
+
+- Add type declarations
+- Internally move to typescript
+
 ## 2022-07-05 0.3.0
 
 ### Added functionality

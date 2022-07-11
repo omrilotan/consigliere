@@ -1,24 +1,19 @@
 /* eslint-env mocha */
 
 import { jest } from "@jest/globals";
-import { Logger } from "./lib/logger";
+import { Logger } from "./consigliere";
 
 let logger;
-let mdl;
-
-const lastLog = () => JSON.parse(console.log.mock.calls.at(-1).at(0));
+const lastLog = (): any =>
+  JSON.parse((console.log as jest.Mock).mock.calls.at(-1).at(0));
 
 describe("logger", () => {
   beforeAll(async () => {
     jest.spyOn(console, "log");
-    mdl = await import(`./index.js?${Date.now()}`);
-    ({ logger } = mdl);
+    logger = new Logger();
   });
   beforeEach(() => jest.resetAllMocks());
   afterAll(() => jest.clearAllMocks());
-  it("exposes full interface", () => {
-    expect(Object.keys(mdl)).toMatchSnapshot();
-  });
   it("pass all levels for default logger", () => {
     expect(console.log).toHaveBeenCalledTimes(0);
     logger.info("Hello", { key: "Value" });

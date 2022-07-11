@@ -1,9 +1,9 @@
-import { ERROR_FIELDS } from "../errorFields/index.js";
-import { stringify } from "../stringify/index.js";
-import { isPrimitive } from "../isPrimitive/index.js";
-import { NORMALISE, RAW } from "../parsers/index.js";
+import { ERROR_FIELDS } from "../errorFields/index";
+import { stringify } from "../stringify/index";
+import { isPrimitive } from "../isPrimitive/index";
+import { NORMALISE, RAW } from "../parsers/index";
 
-export function log(subject, enrichment = {}) {
+export function log(subject: any, enrichment = {}): any {
   const record = {};
   const context = {
     level: this.level,
@@ -38,7 +38,7 @@ export function log(subject, enrichment = {}) {
   return this.device.call(context, output);
 }
 
-function getParser({ parser }) {
+function getParser({ parser }): Function {
   if (parser === false) {
     return RAW;
   }

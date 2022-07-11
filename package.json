@@ -1,6 +1,6 @@
 {
   "name": "consigliere",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "🍝 A simple to use JSON logger",
   "keywords": [
     "logger",
@@ -15,6 +15,8 @@
     "url": "https://github.com/omrilotan/consigliere"
   },
   "main": "./index.js",
+  "type": "commonjs",
+  "types": "./index.d.ts",
   "module": "./index.mjs",
   "browser": "./index.mjs",
   "exports": {
@@ -37,16 +39,21 @@
     "tests/esm"
   ],
   "scripts": {
-    "build": "esbuild src/index.js --format=cjs --bundle --outfile=index.js && esbuild src/index.js --format=esm --bundle  --outfile=index.mjs",
+    "build": "esbuild src/consigliere.ts --format=cjs --bundle --outfile=index.js && esbuild src/consigliere.ts --format=esm --bundle --outfile=index.mjs",
+    "declare": "tsc --declaration --emitDeclarationOnly --out index.d.ts",
     "format": "prettier --write .",
     "lint": "prettier --check .",
     "postbuild": "npm t -w cjs && npm t -w esm",
-    "prepublishOnly": "npm run build",
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest ./src"
+    "prepublishOnly": "npm run build; npm run declare",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest ."
   },
   "devDependencies": {
+    "@types/jest": "^28.1.4",
+    "@types/node": "^18.0.3",
     "esbuild": "^0.14.48",
     "jest": "^28.1.2",
-    "prettier": "^2.7.1"
+    "prettier": "^2.7.1",
+    "ts-jest": "^28.0.5",
+    "typescript": "^4.7.4"
   }
 }

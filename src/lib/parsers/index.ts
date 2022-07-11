@@ -1,9 +1,9 @@
-import { isPrimitive } from "../isPrimitive/index.js";
-import { stringify } from "../stringify/index.js";
+import { isPrimitive } from "../isPrimitive/index";
+import { stringify } from "../stringify/index";
 
-const raw = (input) => input;
+const raw = (input: any): any => input;
 
-function normalise(input) {
+function normalise(input: any): string {
   if (isPrimitive(input)) {
     return input;
   }
@@ -14,7 +14,7 @@ function normalise(input) {
   return stringify(input);
 }
 
-const normalised = (input) =>
+const normalised = (input: Object): Object =>
   Object.fromEntries(
     Object.entries(input).map(([key, value]) => [key, normalise(value)])
   );

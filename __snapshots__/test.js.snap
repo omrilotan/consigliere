@@ -1,0 +1,21 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`build CJS interface 1`] = `
+Array [
+  "Logger",
+  "NORMALISE",
+  "NORMALISE_VALUES",
+  "RAW",
+  "logger",
+]
+`;
+
+exports[`build ESM interface 1`] = `
+Array [
+  "Logger",
+  "NORMALISE",
+  "NORMALISE_VALUES",
+  "RAW",
+  "logger",
+]
+`;

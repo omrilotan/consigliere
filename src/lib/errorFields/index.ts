@@ -1,4 +1,5 @@
-export const ERROR_FIELDS = [
+/** A list of common error getters and properties */
+export const ERROR_FIELDS: readonly string[] = Object.freeze([
   // Error native getters
   "message",
   "stack",
@@ -30,4 +31,4 @@ export const ERROR_FIELDS = [
   // custom
   "details",
   "description",
-];
+]);
