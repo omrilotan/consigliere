@@ -45,6 +45,7 @@
     "lint": "prettier --check .",
     "postbuild": "npm t -w cjs && npm t -w esm",
     "prepublishOnly": "npm run build; npm run declare",
+    "pretest": "npm run build; npm run declare",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest ."
   },
   "devDependencies": {
