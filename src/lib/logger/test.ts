@@ -1,7 +1,7 @@
 /* eslint-env jest */
 
 import { jest } from "@jest/globals";
-import { Logger } from "./index.js";
+import { Logger } from "./index";
 
 describe("lib/logger", () => {
   beforeAll(async () => jest.spyOn(console, "log"));
@@ -10,7 +10,7 @@ describe("lib/logger", () => {
   it("passes the JSON string to console.log", () => {
     const logger = new Logger();
     logger.info("Hello", { key: "Value" });
-    const [[message]] = console.log.mock.calls;
+    const [[message]] = (console.log as jest.Mock).mock.calls;
     expect(JSON.parse(message)).toEqual({
       level: "info",
       message: "Hello",

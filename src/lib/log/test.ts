@@ -1,13 +1,17 @@
 /* eslint-env mocha */
 
 import { jest } from "@jest/globals";
-import { log } from "./index.js";
+import { log } from "./index";
 import { NORMALISE_VALUES, RAW } from "../parsers";
 
+interface ExtendedError extends Error {
+  [key: string]: any;
+}
 let logger;
 
-const lastLog = () => JSON.parse(console.log.mock.calls.at(-1).at(0));
-const context = (obj) =>
+const lastLog = (): any =>
+  JSON.parse((console.log as jest.Mock).mock.calls.at(-1).at(0));
+const context = (obj?: Object): Object =>
   Object.assign(
     {
       level: "info",
@@ -45,7 +49,7 @@ describe("logger", () => {
       hidden: { get: () => "Hidden", enumerable: false },
       visible: { get: () => "Visible", enumerable: true },
     });
-    error.unregistered = "Unregistered";
+    (error as ExtendedError).unregistered = "Unregistered";
     log.call(context(), error, { key: "Value" });
     expect(lastLog()).toEqual({
       level: "info",
@@ -99,14 +103,14 @@ describe("logger", () => {
   it("serves the raw record", () => {
     const record = { key: "Value" };
     log.call(context({ parser: RAW }), record);
-    expect(console.log.mock.calls.at(-1).at(0)).toEqual({
+    expect((console.log as jest.Mock).mock.calls.at(-1).at(0)).toEqual({
       level: "info",
       ...record,
     });
   });
   it("serves the normalised record", () => {
     log.call(context({ parser: NORMALISE_VALUES }), "hello", { key: "Value" });
-    expect(console.log.mock.calls.at(-1).at(0)).toEqual({
+    expect((console.log as jest.Mock).mock.calls.at(-1).at(0)).toEqual({
       level: "info",
       message: "hello",
       key: "Value",

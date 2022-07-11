@@ -1,17 +1,18 @@
-import { log } from "../log/index.js";
-import { NORMALISE } from "../parsers/index.js";
-import { LEVELS } from "../levels/index.js";
+import { log } from "../log/index";
+import { NORMALISE } from "../parsers/index";
+import { LEVELS } from "../levels/index";
 
 /**
  * @param {string[]} [levels=LEVELS]
- * @param {string} [level]
+ * @param {string?} [level]
  * @param {function} [device=console.log]
  */
 export class Logger {
-  #levels = LEVELS;
-  #minimal = 0;
-  #device = console.log;
-  #parser = NORMALISE;
+  #levels: string[] | readonly string[] = LEVELS;
+  #minimal: number = 0;
+  #device: Function = console.log;
+  #parser: false | Function = NORMALISE;
+  [key: string]: any;
   constructor({
     levels = LEVELS,
     level = levels.at(0),
@@ -24,7 +25,10 @@ export class Logger {
     this.#setParser(parser);
 
     return new Proxy(this, {
-      get(logger, prop) {
+      get(logger: Logger, prop: string | symbol) {
+        if (typeof prop !== "string") {
+          return;
+        }
         switch (prop) {
           case "toString":
             return () => `Logger(${levels[logger.#minimal]})`;
@@ -47,9 +51,9 @@ export class Logger {
               : log.bind({ level: prop, device, parser: logger.#parser });
         }
       },
-      set(logger, prop, value) {
+      set(logger: Logger, prop: string | symbol, value): boolean {
         if (Object.isFrozen(logger)) {
-          return logger;
+          return true;
         }
 
         switch (prop) {
@@ -67,12 +71,12 @@ export class Logger {
               "Setting properties is only allowed for [level,levels,device]"
             );
         }
-        return logger;
+        return true;
       },
     });
   }
 
-  #setLevel(level) {
+  #setLevel(level: string): void {
     const index = this.#levels.indexOf(level);
     if (index === -1) {
       throw new RangeError(
@@ -84,7 +88,7 @@ export class Logger {
     this.#minimal = index;
   }
 
-  #setLevels(levels) {
+  #setLevels(levels: string[]): void {
     if (!Array.isArray(levels)) {
       throw new TypeError(
         `levels must be an array, instead got ${typeof levels} (${levels})`
@@ -102,7 +106,7 @@ export class Logger {
     this.#levels = levels;
   }
 
-  #setParser(parser) {
+  #setParser(parser: false | Function): void {
     if (parser !== false && typeof parser !== "function") {
       throw new TypeError(
         `parser must be a function or the boolean "false", instead got ${typeof parser} (${parser})`
@@ -111,7 +115,7 @@ export class Logger {
     this.#parser = parser;
   }
 
-  #setDevice(device) {
+  #setDevice(device: Function): void {
     if (typeof device !== "function") {
       throw new TypeError(
         `device must be a function, instead got ${typeof device} (${device})`
