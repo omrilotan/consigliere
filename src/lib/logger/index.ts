@@ -12,17 +12,20 @@ export class Logger {
   #minimal: number = 0;
   #device: Function = console.log;
   #parser: false | Function = NORMALISE;
+  #fields: object;
   [key: string]: any;
   constructor({
     levels = LEVELS,
     level = levels.at(0),
     device = console.log,
     parser = NORMALISE,
+    fields = {},
   } = {}) {
     this.#setDevice(device);
     this.#setLevels(levels);
     this.#setLevel(level);
     this.#setParser(parser);
+    this.#setFields(fields);
 
     return new Proxy(this, {
       get(logger: Logger, prop: string | symbol) {
@@ -48,7 +51,12 @@ export class Logger {
             }
             return levels.indexOf(prop) < logger.#minimal
               ? () => Promise.resolve(undefined)
-              : log.bind({ level: prop, device, parser: logger.#parser });
+              : log.bind({
+                  level: prop,
+                  device,
+                  parser: logger.#parser,
+                  fields: logger.#fields,
+                });
         }
       },
       set(logger: Logger, prop: string | symbol, value): boolean {
@@ -122,5 +130,14 @@ export class Logger {
       );
     }
     this.#device = device;
+  }
+
+  #setFields(fields: object): void {
+    if (fields.toString() !== "[object Object]") {
+      throw new TypeError(
+        `fields must be an object, instead got ${typeof fields} (${fields})`
+      );
+    }
+    this.#fields = fields;
   }
 }
