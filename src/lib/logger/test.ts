@@ -52,6 +52,30 @@ describe("lib/logger", () => {
     logger.info("Hello");
     expect(console.log).toHaveBeenCalledTimes(1);
   });
+  it("can set constant fields to a logger", () => {
+    const logger = new Logger({ level: "warn", fields: { version: "1.0.0" } });
+    logger.warn({ key: "Value" });
+    const [[record]] = (console.log as jest.Mock).mock.calls;
+    expect(JSON.parse(record)).toEqual({
+      key: "Value",
+      version: "1.0.0",
+      level: "warn",
+    });
+  });
+  it("log object takes presedence to constant fields", () => {
+    const logger = new Logger({
+      level: "warn",
+      fields: { version: "1.0.0", app: "my-app" },
+    });
+    logger.warn({ key: "Value", version: "2.0.0" });
+    const [[record]] = (console.log as jest.Mock).mock.calls;
+    expect(JSON.parse(record)).toEqual({
+      key: "Value",
+      version: "2.0.0",
+      app: "my-app",
+      level: "warn",
+    });
+  });
   it("Logger has proper getters", () => {
     const logger = new Logger({ level: "warn" });
     expect(logger.toString()).toBe("Logger(warn)");

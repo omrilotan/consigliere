@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 2022-07-18 0.5.0
+
+### Added functionality
+
+- Add constant fields to a logger instance
+
 ## 2022-07-11 0.4.0
 
 ### Added functionality

@@ -30,6 +30,7 @@ export function log(subject: any, enrichment = {}): any {
   const parser = getParser(this);
 
   const output = parser.call(context, {
+    ...this.fields,
     ...enrichment,
     ...record,
     level: this.level,

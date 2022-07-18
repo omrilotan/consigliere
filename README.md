@@ -94,3 +94,16 @@ const logger = new Logger({
   },
 });
 ```
+
+## Add constant fields to each record for the logger
+
+```js
+import { Logger } from "consigliere";
+
+const logger = new Logger({
+  fields: {
+    application: "my-app",
+    version: "0.0.1",
+  },
+});
+```
