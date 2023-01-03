@@ -1,6 +1,8 @@
 # consigliere
 
-🍝 A simple to use JSON logger
+🍝 A simple-to-use JSON logger
+
+> ### • Quick to start • Intuitive interface • Rich with customisation.
 
 ## Quick use logger
 
@@ -40,7 +42,7 @@ logger.info("I have a message to relay"); // nothing happens
 logger.warn("Something worrying happened"); // logs record
 ```
 
-## Use any log levels
+## Use your own set of log levels
 
 ```js
 import { Logger } from "consigliere";
@@ -57,7 +59,7 @@ logger.medium("I have a message to relay");
 logger.warn("Something worrying happened"); // logs
 ```
 
-## Define alternative logging device
+## Define alternative logging devices
 
 ```js
 import { Logger } from "consigliere";
@@ -76,14 +78,14 @@ import { Logger, NORMALISE_VALUES, NORMALISE, RAW } from "consigliere";
 const logger = new Logger();
 const logger = new Logger({ parser: NORMALISE });
 
-// output the raw object
+// Output the raw object
 const logger = new Logger({ parser: false });
 const logger = new Logger({ parser: RAW });
 
 // Stringify values of the record object
 const logger = new Logger({ parser: NORMALISE_VALUES });
 
-// Custom function
+// Parse the record yourself
 const logger = new Logger({
   parser: function ({ application, ...record }) {
     return JSON.stringify({
@@ -95,7 +97,7 @@ const logger = new Logger({
 });
 ```
 
-## Add constant fields to each record for the logger
+## Add constant fields to each record of the logger
 
 ```js
 import { Logger } from "consigliere";

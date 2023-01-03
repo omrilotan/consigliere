@@ -10,7 +10,9 @@ interface ExtendedError extends Error {
 let logger;
 
 const lastLog = (): any =>
-  JSON.parse((console.log as jest.Mock).mock.calls.at(-1).at(0));
+  JSON.parse(
+    ((console.log as jest.Mock).mock.calls as string[][]).at(-1).at(0)
+  );
 const context = (obj?: Object): Object =>
   Object.assign(
     {

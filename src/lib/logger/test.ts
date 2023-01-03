@@ -10,7 +10,7 @@ describe("lib/logger", () => {
   it("passes the JSON string to console.log", () => {
     const logger = new Logger();
     logger.info("Hello", { key: "Value" });
-    const [[message]] = (console.log as jest.Mock).mock.calls;
+    const [[message]] = (console.log as jest.Mock).mock.calls as string[][];
     expect(JSON.parse(message)).toEqual({
       level: "info",
       message: "Hello",
@@ -55,7 +55,7 @@ describe("lib/logger", () => {
   it("can set constant fields to a logger", () => {
     const logger = new Logger({ level: "warn", fields: { version: "1.0.0" } });
     logger.warn({ key: "Value" });
-    const [[record]] = (console.log as jest.Mock).mock.calls;
+    const [[record]] = (console.log as jest.Mock).mock.calls as string[][];
     expect(JSON.parse(record)).toEqual({
       key: "Value",
       version: "1.0.0",
@@ -68,7 +68,7 @@ describe("lib/logger", () => {
       fields: { version: "1.0.0", app: "my-app" },
     });
     logger.warn({ key: "Value", version: "2.0.0" });
-    const [[record]] = (console.log as jest.Mock).mock.calls;
+    const [[record]] = (console.log as jest.Mock).mock.calls as string[][];
     expect(JSON.parse(record)).toEqual({
       key: "Value",
       version: "2.0.0",
