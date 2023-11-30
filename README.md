@@ -51,21 +51,18 @@ const logger = new Logger({
   levels: ["low", "medium", "high"],
   level: "medium",
 });
-logger.low("I have something to show you");
-// nothing
-logger.medium("I have a message to relay");
-// {"message":"I have a message to relay","level":"low"}
-
-logger.warn("Something worrying happened"); // logs
+logger.low("I have something to show you"); // Does not log record
+logger.medium("I have a message to relay"); // Logs record
+logger.warn("Something worrying happened"); // Logs record
 ```
 
 ## Define alternative logging devices
 
-```js
+```ts
 import { Logger } from "consigliere";
 
 const logger = new Logger({
-  device: (json) => navigator.sendBeacon("/log", json),
+  device: (json: string): boolean => navigator.sendBeacon("/log", json),
 });
 ```
 

@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 2023-11-30 0.6.0
+
+### Added support
+
+- Add support for error cause
+
 ## 2022-07-18 0.5.0
 
 ### Added functionality

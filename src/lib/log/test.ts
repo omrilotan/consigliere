@@ -11,7 +11,7 @@ let logger;
 
 const lastLog = (): any =>
   JSON.parse(
-    ((console.log as jest.Mock).mock.calls as string[][]).at(-1).at(0)
+    ((console.log as jest.Mock).mock.calls as string[][]).at(-1).at(0),
   );
 const context = (obj?: Object): Object =>
   Object.assign(
@@ -19,7 +19,7 @@ const context = (obj?: Object): Object =>
       level: "info",
       device: console.log,
     },
-    obj || {}
+    obj || {},
   );
 
 describe("logger", () => {
@@ -45,7 +45,9 @@ describe("logger", () => {
     });
   });
   it("Parses error and enrichment", () => {
-    const error = new TypeError("Something must have gone horribly wrong");
+    const error = new TypeError("Something must have gone horribly wrong", {
+      cause: new Error("Something went wrong before this"),
+    });
     Object.defineProperties(error, {
       info: { get: () => "Information", enumerable: false },
       hidden: { get: () => "Hidden", enumerable: false },
@@ -59,6 +61,7 @@ describe("logger", () => {
       name: "TypeError",
       stack: error.stack,
       key: "Value",
+      cause: "Something went wrong before this",
       info: "Information",
       visible: "Visible",
       unregistered: "Unregistered",
@@ -78,7 +81,7 @@ describe("logger", () => {
         ["a", 1],
         ["b", 2],
       ]),
-      { key: "Value" }
+      { key: "Value" },
     );
     expect(lastLog()).toEqual({
       level: "info",

@@ -6,7 +6,7 @@ import { Logger } from "./consigliere";
 let logger;
 const lastLog = (): any =>
   JSON.parse(
-    ((console.log as jest.Mock).mock.calls as string[][]).at(-1).at(0)
+    ((console.log as jest.Mock).mock.calls as string[][]).at(-1).at(0),
   );
 
 describe("logger", () => {

@@ -4,7 +4,7 @@ import { isPrimitive } from "../isPrimitive/index";
 import { NORMALISE, RAW } from "../parsers/index";
 
 export function log(subject: any, enrichment = {}): any {
-  const record = {};
+  const record: Record<string, any> = {};
   const context = {
     level: this.level,
   };
@@ -17,8 +17,9 @@ export function log(subject: any, enrichment = {}): any {
     Object.assign(
       record,
       { ...subject },
-      ...ERROR_FIELDS.map((field) => ({ [field]: subject[field] }))
+      ...ERROR_FIELDS.map((field) => ({ [field]: subject[field] })),
     );
+    record.cause = getCause(subject);
   } else if (Array.isArray(subject)) {
     Object.assign(record, { message: subject.join(", ") });
   } else if (subject?.toString() === "[object Object]") {
@@ -39,7 +40,7 @@ export function log(subject: any, enrichment = {}): any {
   return this.device.call(context, output);
 }
 
-function getParser({ parser }): Function {
+function getParser({ parser }: { parser: Function | boolean }): Function {
   if (parser === false) {
     return RAW;
   }
@@ -48,4 +49,22 @@ function getParser({ parser }): Function {
   }
 
   return NORMALISE;
+}
+
+/**
+ * Get a string representation of cause property of an error
+ */
+function getCause(error: Error): string | undefined {
+  if (!("cause" in error)) {
+    return undefined;
+  }
+  const { cause } = error;
+  if (cause instanceof Error) {
+    if (cause === error) {
+      return "[Circular]";
+    } else {
+      return cause.message;
+    }
+  }
+  return typeof cause === "undefined" ? cause : String(cause);
 }

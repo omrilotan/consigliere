@@ -16,7 +16,7 @@ function normalise(input: any): string {
 
 const normalised = (input: Object): Object =>
   Object.fromEntries(
-    Object.entries(input).map(([key, value]) => [key, normalise(value)])
+    Object.entries(input).map(([key, value]) => [key, normalise(value)]),
   );
 
 export const NORMALISE = normalise;

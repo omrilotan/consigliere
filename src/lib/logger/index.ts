@@ -2,17 +2,12 @@ import { log } from "../log/index";
 import { NORMALISE } from "../parsers/index";
 import { LEVELS } from "../levels/index";
 
-/**
- * @param {string[]} [levels=LEVELS]
- * @param {string?} [level]
- * @param {function} [device=console.log]
- */
 export class Logger {
   #levels: string[] | readonly string[] = LEVELS;
   #minimal: number = 0;
   #device: Function = console.log;
   #parser: false | Function = NORMALISE;
-  #fields: object;
+  #fields: Record<string, any>;
   [key: string]: any;
   constructor({
     levels = LEVELS,
@@ -20,6 +15,12 @@ export class Logger {
     device = console.log,
     parser = NORMALISE,
     fields = {},
+  }: {
+    levels?: string[] | readonly string[];
+    level?: string;
+    device?: (message?: any, ...optionalParams: any[]) => void;
+    parser?: (input: any) => string;
+    fields?: Record<string, any>;
   } = {}) {
     this.#setDevice(device);
     this.#setLevels(levels);
@@ -45,8 +46,8 @@ export class Logger {
             if (!levels.includes(prop)) {
               throw new RangeError(
                 `Logger level must be one of [${levels.join(
-                  ","
-                )}]. Instead got [${prop}].`
+                  ",",
+                )}]. Instead got [${prop}].`,
               );
             }
             return levels.indexOf(prop) < logger.#minimal
@@ -76,7 +77,7 @@ export class Logger {
             break;
           default:
             throw new Error(
-              "Setting properties is only allowed for [level,levels,device]"
+              "Setting properties is only allowed for [level,levels,device]",
             );
         }
         return true;
@@ -89,25 +90,25 @@ export class Logger {
     if (index === -1) {
       throw new RangeError(
         `level must be one of [${this.#levels.join(
-          ","
-        )}]. Instead got [${level}].`
+          ",",
+        )}]. Instead got [${level}].`,
       );
     }
     this.#minimal = index;
   }
 
-  #setLevels(levels: string[]): void {
+  #setLevels(levels: string[] | readonly string[]): void {
     if (!Array.isArray(levels)) {
       throw new TypeError(
-        `levels must be an array, instead got ${typeof levels} (${levels})`
+        `levels must be an array, instead got ${typeof levels} (${levels})`,
       );
     }
 
     if (levels.some((level) => typeof level !== "string")) {
       throw new TypeError(
         `levels must be an array of strings, instead got ${levels.map(
-          (level) => typeof level
-        )} (${levels.join(", ")})`
+          (level) => typeof level,
+        )} (${levels.join(", ")})`,
       );
     }
 
@@ -117,7 +118,7 @@ export class Logger {
   #setParser(parser: false | Function): void {
     if (parser !== false && typeof parser !== "function") {
       throw new TypeError(
-        `parser must be a function or the boolean "false", instead got ${typeof parser} (${parser})`
+        `parser must be a function or the boolean "false", instead got ${typeof parser} (${parser})`,
       );
     }
     this.#parser = parser;
@@ -126,7 +127,7 @@ export class Logger {
   #setDevice(device: Function): void {
     if (typeof device !== "function") {
       throw new TypeError(
-        `device must be a function, instead got ${typeof device} (${device})`
+        `device must be a function, instead got ${typeof device} (${device})`,
       );
     }
     this.#device = device;
@@ -135,7 +136,7 @@ export class Logger {
   #setFields(fields: object): void {
     if (fields.toString() !== "[object Object]") {
       throw new TypeError(
-        `fields must be an object, instead got ${typeof fields} (${fields})`
+        `fields must be an object, instead got ${typeof fields} (${fields})`,
       );
     }
     this.#fields = fields;
