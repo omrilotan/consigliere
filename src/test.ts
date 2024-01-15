@@ -1,5 +1,3 @@
-/* eslint-env mocha */
-
 import { jest } from "@jest/globals";
 import { Logger } from "./consigliere";
 

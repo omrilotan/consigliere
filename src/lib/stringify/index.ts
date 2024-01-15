@@ -1,3 +1,6 @@
+/**
+ * Parse input to JSON string or cast to string representation
+ */
 export function stringify(
   input: any,
   replacer?: (this: any, key: string, value: any) => any,

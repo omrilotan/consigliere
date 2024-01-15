@@ -2,6 +2,9 @@ import { log } from "../log/index";
 import { NORMALISE } from "../parsers/index";
 import { LEVELS } from "../levels/index";
 
+/**
+ * Logger class. Can be used to create multiple loggers with different settings.
+ */
 export class Logger {
   #levels: string[] | readonly string[] = LEVELS;
   #minimal: number = 0;

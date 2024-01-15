@@ -1,37 +1,28 @@
 # CHANGELOG
 
-## 2023-11-30 0.6.0
+## 1.0.0
 
-### Added support
+- Mature the package - no changes
+
+## 0.6.0
 
 - Add support for error cause
 
-## 2022-07-18 0.5.0
-
-### Added functionality
+## 0.5.0
 
 - Add constant fields to a logger instance
 
-## 2022-07-11 0.4.0
-
-### Added functionality
+## 0.4.0
 
 - Add type declarations
 - Internally move to typescript
 
-## 2022-07-05 0.3.0
-
-### Added functionality
+## 0.3.0
 
 - Add parser functions to get the record in different formats
 - Expose record level to "device" and "parser" through "this" reference
-
-### Improvements
-
 - Improved object record values normalisation
 
-## 2022-03-17 0.2.2
-
-### Added functionality
+## 0.2.2
 
 - Log objects and arrays

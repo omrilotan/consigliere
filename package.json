@@ -1,6 +1,6 @@
 {
   "name": "consigliere",
-  "version": "0.6.0",
+  "version": "1.0.0",
   "description": "🍝 A simple to use JSON logger",
   "keywords": [
     "logger",
@@ -42,7 +42,6 @@
     "build": "esbuild src/consigliere.ts --format=cjs --bundle --outfile=index.js && esbuild src/consigliere.ts --format=esm --bundle --outfile=index.mjs",
     "declare": "tsc --declaration --emitDeclarationOnly --outfile index.d.ts",
     "format": "prettier --write .",
-    "lint": "prettier --check .",
     "postbuild": "npm t -w cjs && npm t -w esm",
     "prepublishOnly": "npm run build; npm run declare",
     "pretest": "npm run build; npm run declare",

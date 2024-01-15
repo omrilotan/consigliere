@@ -3,6 +3,9 @@ import { stringify } from "../stringify/index";
 import { isPrimitive } from "../isPrimitive/index";
 import { NORMALISE, RAW } from "../parsers/index";
 
+/**
+ * Log to the configured device, using parser, with enrichment. Filter according to level.
+ */
 export function log(subject: any, enrichment = {}): any {
   const record: Record<string, any> = {};
   const context = {
@@ -40,6 +43,9 @@ export function log(subject: any, enrichment = {}): any {
   return this.device.call(context, output);
 }
 
+/**
+ * Use the appropriate parser for the logger
+ */
 function getParser({ parser }: { parser: Function | boolean }): Function {
   if (parser === false) {
     return RAW;

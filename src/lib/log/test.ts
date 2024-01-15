@@ -1,5 +1,3 @@
-/* eslint-env mocha */
-
 import { jest } from "@jest/globals";
 import { log } from "./index";
 import { NORMALISE_VALUES, RAW } from "../parsers";

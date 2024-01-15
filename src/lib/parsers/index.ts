@@ -1,9 +1,15 @@
 import { isPrimitive } from "../isPrimitive/index";
 import { stringify } from "../stringify/index";
 
-const raw = (input: any): any => input;
+/**
+ * Return input as is
+ */
+export const RAW = (input: any): any => input;
 
-function normalise(input: any): string {
+/**
+ * Normalise input to string
+ */
+export function NORMALISE(input: any): string {
   if (isPrimitive(input)) {
     return input;
   }
@@ -14,11 +20,10 @@ function normalise(input: any): string {
   return stringify(input);
 }
 
-const normalised = (input: Object): Object =>
+/**
+ * Normalise input to object with string values
+ */
+export const NORMALISE_VALUES = (input: Object): Object =>
   Object.fromEntries(
-    Object.entries(input).map(([key, value]) => [key, normalise(value)]),
+    Object.entries(input).map(([key, value]) => [key, NORMALISE(value)]),
   );
-
-export const NORMALISE = normalise;
-export const RAW = raw;
-export const NORMALISE_VALUES = normalised;
