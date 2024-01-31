@@ -1,7 +1,7 @@
-import { ERROR_FIELDS } from "../errorFields/index";
-import { stringify } from "../stringify/index";
-import { isPrimitive } from "../isPrimitive/index";
-import { NORMALISE, RAW } from "../parsers/index";
+import { ERROR_FIELDS } from "../errorFields";
+import { stringify } from "../stringify";
+import { isPrimitive } from "../isPrimitive";
+import { NORMALISE, RAW } from "../parsers";
 
 /**
  * Log to the configured device, using parser, with enrichment. Filter according to level.
