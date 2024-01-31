@@ -1,5 +1,5 @@
 import { jest } from "@jest/globals";
-import { Logger } from "./consigliere";
+import { Logger } from ".";
 
 let logger;
 const lastLog = (): any =>

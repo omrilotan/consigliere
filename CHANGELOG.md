@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 1.0.1
+
+- Change build system with a flatter type definition file output
+
 ## 1.0.0
 
 - Mature the package - no changes
