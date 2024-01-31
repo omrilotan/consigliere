@@ -1,6 +1,6 @@
-import { log } from "../log/index";
-import { NORMALISE } from "../parsers/index";
-import { LEVELS } from "../levels/index";
+import { log } from "../log";
+import { NORMALISE } from "../parsers";
+import { LEVELS } from "../levels";
 
 /**
  * Logger class. Can be used to create multiple loggers with different settings.

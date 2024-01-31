@@ -1,5 +1,4 @@
-import { jest } from "@jest/globals";
-import { Logger } from "./index";
+import { Logger } from ".";
 
 describe("lib/logger", () => {
   beforeAll(async () => jest.spyOn(console, "log"));

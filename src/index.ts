@@ -1,5 +1,5 @@
-import { Logger } from "./lib/logger/index";
-export * from "./lib/parsers/index";
+import { Logger } from "./lib/logger";
+export * from "./lib/parsers";
 
 /**
  * Ready to use logger

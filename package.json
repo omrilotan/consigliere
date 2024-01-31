@@ -1,6 +1,6 @@
 {
   "name": "consigliere",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "🍝 A simple to use JSON logger",
   "keywords": [
     "logger",
@@ -14,23 +14,26 @@
     "type": "git",
     "url": "https://github.com/omrilotan/consigliere"
   },
-  "main": "./index.js",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/index.js",
   "type": "commonjs",
-  "types": "./index.d.ts",
-  "module": "./index.mjs",
-  "browser": "./index.mjs",
+  "types": "./dist/index.d.ts",
+  "module": "./dist/index.mjs",
+  "browser": "./dist/index.mjs",
   "exports": {
     ".": {
-      "import": "./index.mjs",
-      "require": "./index.js",
-      "default": "./index.js",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "default": "./dist/index.js",
       "browser": {
-        "import": "./index.mjs",
-        "require": "./index.js"
+        "import": "./dist/index.mjs",
+        "require": "./dist/index.js"
       },
       "node": {
-        "import": "./index.mjs",
-        "require": "./index.js"
+        "import": "./dist/index.mjs",
+        "require": "./dist/index.js"
       }
     }
   },
@@ -39,21 +42,19 @@
     "tests/esm"
   ],
   "scripts": {
-    "build": "esbuild src/consigliere.ts --format=cjs --bundle --outfile=index.js && esbuild src/consigliere.ts --format=esm --bundle --outfile=index.mjs",
-    "declare": "tsc --declaration --emitDeclarationOnly --outfile index.d.ts",
+    "build": "tsup src/index.ts --format esm,cjs --dts --sourcemap",
     "format": "prettier --write .",
     "postbuild": "npm t -w cjs && npm t -w esm",
-    "prepublishOnly": "npm run build; npm run declare",
-    "pretest": "npm run build; npm run declare",
+    "prepublishOnly": "npm run build",
+    "pretest": "npm run build",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest ."
   },
   "devDependencies": {
     "@types/jest": "^29.2.5",
     "@types/node": "^20.10.1",
-    "esbuild": "^0.19.8",
     "jest": "^29.3.1",
     "prettier": "^3.1.0",
     "ts-jest": "^29.0.3",
-    "typescript": "^5.3.2"
+    "tsup": "^8.0.1"
   }
 }

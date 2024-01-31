@@ -1,5 +1,4 @@
-import { jest } from "@jest/globals";
-import { log } from "./index";
+import { log } from ".";
 import { NORMALISE_VALUES, RAW } from "../parsers";
 
 interface ExtendedError extends Error {
