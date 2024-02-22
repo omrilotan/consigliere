@@ -1,5 +1,27 @@
+export type ErrorFields =
+  | "message"
+  | "stack"
+  | "code"
+  | "name"
+  | "fileName"
+  | "lineNumber"
+  | "columnNumber"
+  | "address"
+  | "dest"
+  | "errno"
+  | "info"
+  | "path"
+  | "port"
+  | "syscall"
+  | "opensslErrorStack"
+  | "function"
+  | "library"
+  | "reason"
+  | "details"
+  | "description";
+
 /** A list of common error getters and properties */
-export const ERROR_FIELDS: readonly string[] = Object.freeze([
+export const ERROR_FIELDS: readonly ErrorFields[] = Object.freeze([
   // Error native getters
   "message",
   "stack",

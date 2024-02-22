@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 1.1.0
+
+- Typescript: Expose types ErrorFields and DefaultLevels
+
 ## 1.0.1
 
 - Change build system with a flatter type definition file output
