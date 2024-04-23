@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 1.2.0
+
+- Add "dynamicFields" option to allow dynamic fields to be added to the log record
+
 ## 1.1.0
 
 - Typescript: Expose types ErrorFields and DefaultLevels

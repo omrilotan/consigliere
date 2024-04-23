@@ -97,12 +97,21 @@ const logger = new Logger({
 ## Add constant fields to each record of the logger
 
 ```js
-import { Logger } from "consigliere";
-
 const logger = new Logger({
   fields: {
     application: "my-app",
     version: "0.0.1",
+  },
+});
+```
+
+## Add dynamic fields to each record of the logger
+
+```js
+const start = Date.now();
+const logger = new Logger({
+  dynamicFields: {
+    duration: () => Date.now() - start,
   },
 });
 ```

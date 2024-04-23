@@ -35,6 +35,7 @@ export function log(subject: any, enrichment = {}): any {
 
   const output = parser.call(context, {
     ...this.fields,
+    ...this.dynamicFields?.(),
     ...enrichment,
     ...record,
     level: this.level,

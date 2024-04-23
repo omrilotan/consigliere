@@ -59,6 +59,21 @@ describe("lib/logger", () => {
       level: "warn",
     });
   });
+  it("can set dynamic fields to a logger", () => {
+    const logger = new Logger({
+      level: "warn",
+      fields: { version: "1.0.0" },
+      dynamicFields: () => ({ app: "my-app" }),
+    });
+    logger.warn({ key: "Value" });
+    const [[record]] = (console.log as jest.Mock).mock.calls as string[][];
+    expect(JSON.parse(record)).toEqual({
+      key: "Value",
+      version: "1.0.0",
+      level: "warn",
+      app: "my-app",
+    });
+  });
   it("log object takes presedence to constant fields", () => {
     const logger = new Logger({
       level: "warn",

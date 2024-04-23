@@ -11,6 +11,7 @@ export class Logger {
   #device: Function = console.log;
   #parser: false | Function = NORMALISE;
   #fields: Record<string, any>;
+  #dynamicFields: () => Record<string, any>;
   [key: string]: any;
   constructor({
     levels = LEVELS,
@@ -18,18 +19,21 @@ export class Logger {
     device = console.log,
     parser = NORMALISE,
     fields = {},
+    dynamicFields = () => ({}),
   }: {
     levels?: string[] | readonly string[];
     level?: string;
     device?: (message?: any, ...optionalParams: any[]) => void;
     parser?: (input: any) => string;
     fields?: Record<string, any>;
+    dynamicFields?: () => Record<string, any>;
   } = {}) {
     this.#setDevice(device);
     this.#setLevels(levels);
     this.#setLevel(level);
     this.#setParser(parser);
     this.#setFields(fields);
+    this.#setDynamicFields(dynamicFields);
 
     return new Proxy(this, {
       get(logger: Logger, prop: string | symbol) {
@@ -60,6 +64,7 @@ export class Logger {
                   device,
                   parser: logger.#parser,
                   fields: logger.#fields,
+                  dynamicFields: logger.#dynamicFields,
                 });
         }
       },
@@ -143,5 +148,14 @@ export class Logger {
       );
     }
     this.#fields = fields;
+  }
+
+  #setDynamicFields(dynamicFields: () => Record<string, any>): void {
+    if (typeof dynamicFields !== "function") {
+      throw new TypeError(
+        `dynamicFields must be a function, instead got ${typeof dynamicFields} (${dynamicFields})`,
+      );
+    }
+    this.#dynamicFields = dynamicFields;
   }
 }
