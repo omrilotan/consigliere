@@ -1,34 +1,42 @@
-import { Logger } from ".";
+import { describe, test, before, beforeEach, after } from "node:test";
+import { equal } from "node:assert/strict";
+import { Logger } from "./index.ts";
 
-let logger;
-const lastLog = (): any =>
-  JSON.parse(
-    ((console.log as jest.Mock).mock.calls as string[][]).at(-1).at(0),
-  );
+const console_log = console.log;
+const calls: any[] = [];
+
+let logger: Logger;
+const lastLog = (): any => JSON.parse(calls.at(-1).at(0));
 
 describe("logger", () => {
-  beforeAll(async () => {
-    jest.spyOn(console, "log");
+  before(async () => {
+    console.log = function (...args: any[]) {
+      calls.push(args);
+    };
     logger = new Logger();
   });
-  beforeEach(() => jest.resetAllMocks());
-  afterAll(() => jest.clearAllMocks());
-  it("pass all levels for default logger", () => {
-    expect(console.log).toHaveBeenCalledTimes(0);
+  beforeEach(() => {
+    calls.length = 0;
+  });
+  after(() => {
+    console.log = console_log;
+  });
+  test("pass all levels for default logger", () => {
+    equal(calls.length, 0);
     logger.info("Hello", { key: "Value" });
-    expect(console.log).toHaveBeenCalledTimes(1);
-    expect(lastLog().level).toBe("info");
+    equal(calls.length, 1);
+    equal(lastLog().level, "info");
     logger.debug("Hello", { key: "Value" });
-    expect(console.log).toHaveBeenCalledTimes(2);
-    expect(lastLog().level).toBe("debug");
+    equal(calls.length, 2);
+    equal(lastLog().level, "debug");
     logger.info("Hello", { key: "Value" });
-    expect(console.log).toHaveBeenCalledTimes(3);
-    expect(lastLog().level).toBe("info");
+    equal(calls.length, 3);
+    equal(lastLog().level, "info");
     logger.warn("Hello", { key: "Value" });
-    expect(console.log).toHaveBeenCalledTimes(4);
-    expect(lastLog().level).toBe("warn");
+    equal(calls.length, 4);
+    equal(lastLog().level, "warn");
     logger.error("Hello", { key: "Value" });
-    expect(console.log).toHaveBeenCalledTimes(5);
-    expect(lastLog().level).toBe("error");
+    equal(calls.length, 5);
+    equal(lastLog().level, "error");
   });
 });

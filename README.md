@@ -42,18 +42,20 @@ logger.info("I have a message to relay"); // nothing happens
 logger.warn("Something worrying happened"); // logs record
 ```
 
-## Use your own set of log levels
+## Use your own set of log levels with a strong typescript signature
 
 ```js
 import { Logger } from "consigliere";
 
-const logger = new Logger({
-  levels: ["low", "medium", "high"],
+const levels = ["low", "medium", "high"] as const;
+const logger = new Logger<typeof levels>({
+  levels,
   level: "medium",
 });
 logger.low("I have something to show you"); // Does not log record
 logger.medium("I have a message to relay"); // Logs record
-logger.warn("Something worrying happened"); // Logs record
+logger.high("Something worrying happened"); // Logs record
+logger.error("Something must have gone horribly wrong"); // Typescript error - "error" is not a valid log level
 ```
 
 ## Define alternative logging devices

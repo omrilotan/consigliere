@@ -2,7 +2,8 @@
   "type": "commonjs",
   "scripts": {
     "pretest": "npm i",
-    "test": "node ."
+    "test": "node .",
+    "posttest": "npm r consigliere --no-save"
   },
   "dependencies": {
     "consigliere": "../.."

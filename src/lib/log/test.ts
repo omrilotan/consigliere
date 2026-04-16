@@ -1,47 +1,60 @@
-import { log } from ".";
-import { NORMALISE_VALUES, RAW } from "../parsers";
+import { describe, test, before, beforeEach, after } from "node:test";
+import { deepEqual } from "node:assert/strict";
+import { log } from "./index.ts";
+import type { LogContext } from "./index.ts";
+import { NORMALISE, NORMALISE_VALUES, RAW } from "../parsers/index.ts";
+import { Logger } from "../../index.ts";
 
 interface ExtendedError extends Error {
   [key: string]: any;
 }
-let logger;
+let logger: Logger;
 
-const lastLog = (): any =>
-  JSON.parse(
-    ((console.log as jest.Mock).mock.calls as string[][]).at(-1).at(0),
-  );
-const context = (obj?: Object): Object =>
-  Object.assign(
-    {
-      level: "info",
-      device: console.log,
-    },
-    obj || {},
-  );
+const console_log = console.log;
+const calls: any[] = [];
+const lastLog = (): any => calls.at(-1).at(0);
+let context: (obj?: Object) => LogContext;
 
 describe("logger", () => {
-  beforeAll(async () => {
-    jest.spyOn(console, "log");
+  before(async () => {
+    console.log = function (...args: any[]) {
+      calls.push(args);
+    };
+    context = (obj?: Object): LogContext =>
+      Object.assign(
+        {
+          level: "info" as LogContext["level"],
+          device: console.log,
+          parser: NORMALISE,
+          fields: {},
+          dynamicFields: () => ({}),
+        },
+        obj || {},
+      );
   });
-  beforeEach(() => jest.resetAllMocks());
-  afterAll(() => jest.clearAllMocks());
+  beforeEach(() => {
+    calls.length = 0;
+  });
+  after(() => {
+    console.log = console_log;
+  });
 
-  it("Logs string message and enrichment", () => {
+  test("Logs string message and enrichment", () => {
     log.call(context(), "Hello", { key: "Value" });
-    expect(lastLog()).toEqual({
+    deepEqual(JSON.parse(lastLog()), {
       level: "info",
       message: "Hello",
       key: "Value",
     });
   });
-  it("Logs objects", () => {
+  test("Logs objects", () => {
     log.call(context(), { key: "Value" });
-    expect(lastLog()).toEqual({
+    deepEqual(JSON.parse(lastLog()), {
       level: "info",
       key: "Value",
     });
   });
-  it("Parses error and enrichment", () => {
+  test("Parses error and enrichment", () => {
     const error = new TypeError("Something must have gone horribly wrong", {
       cause: new Error("Something went wrong before this"),
     });
@@ -52,7 +65,7 @@ describe("logger", () => {
     });
     (error as ExtendedError).unregistered = "Unregistered";
     log.call(context(), error, { key: "Value" });
-    expect(lastLog()).toEqual({
+    deepEqual(JSON.parse(lastLog()), {
       level: "info",
       message: "Something must have gone horribly wrong",
       name: "TypeError",
@@ -64,14 +77,14 @@ describe("logger", () => {
       unregistered: "Unregistered",
     });
   });
-  it("Coerces arrays", () => {
+  test("Coerces arrays", () => {
     log.call(context(), [1, 2, 3]);
-    expect(lastLog()).toEqual({
+    deepEqual(JSON.parse(lastLog()), {
       level: "info",
       message: "1, 2, 3",
     });
   });
-  it("Coerces other things into strings", () => {
+  test("Coerces other things into strings", () => {
     log.call(
       context(),
       new Map([
@@ -80,39 +93,39 @@ describe("logger", () => {
       ]),
       { key: "Value" },
     );
-    expect(lastLog()).toEqual({
+    deepEqual(JSON.parse(lastLog()), {
       level: "info",
       message: "{}",
       key: "Value",
     });
   });
-  it("Normalises nested fields", () => {
+  test("Normalises nested fields", () => {
     log.call(context(), { key: { key: "Value" } });
-    expect(lastLog()).toEqual({
+    deepEqual(JSON.parse(lastLog()), {
       level: "info",
       key: {
         key: "Value",
       },
     });
   });
-  it("Normalises array items", () => {
+  test("Normalises array items", () => {
     log.call(context(), [{ key: "Value" }, { key: "Value" }]);
-    expect(lastLog()).toEqual({
+    deepEqual(JSON.parse(lastLog()), {
       level: "info",
       message: "[object Object], [object Object]",
     });
   });
-  it("serves the raw record", () => {
+  test("serves the raw record", () => {
     const record = { key: "Value" };
     log.call(context({ parser: RAW }), record);
-    expect((console.log as jest.Mock).mock.calls.at(-1).at(0)).toEqual({
+    deepEqual(lastLog(), {
       level: "info",
       ...record,
     });
   });
-  it("serves the normalised record", () => {
+  test("serves the normalised record", () => {
     log.call(context({ parser: NORMALISE_VALUES }), "hello", { key: "Value" });
-    expect((console.log as jest.Mock).mock.calls.at(-1).at(0)).toEqual({
+    deepEqual(lastLog(), {
       level: "info",
       message: "hello",
       key: "Value",

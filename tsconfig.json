@@ -1,11 +1,14 @@
 {
   "compilerOptions": {
-    "module": "esnext",
+    "noEmit": true,
+    "module": "nodenext",
     "target": "esnext",
     "lib": ["esnext"],
-    "types": ["@types/node", "@types/jest"],
-    "moduleResolution": "node"
+    "types": ["@types/node"],
+    "moduleResolution": "nodenext",
+    "allowImportingTsExtensions": true,
+    "ignoreDeprecations": "6.0"
   },
-  "include": ["src/**/*"],
+  "include": ["**/*"],
   "exclude": ["node_modules", "dist"]
 }
