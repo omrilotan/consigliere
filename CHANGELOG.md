@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 2.0.0
+
+- New typescript signature adds the Levels to the Logger class signature
+- Drop support for older node versions
+
 ## 1.2.0
 
 - Add "dynamicFields" option to allow dynamic fields to be added to the log record

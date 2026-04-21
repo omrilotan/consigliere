@@ -1,12 +1,20 @@
-import { ERROR_FIELDS } from "../errorFields";
-import { stringify } from "../stringify";
-import { isPrimitive } from "../isPrimitive";
-import { NORMALISE, RAW } from "../parsers";
+import { ERROR_FIELDS } from "../errorFields/index.ts";
+import { stringify } from "../stringify/index.ts";
+import { isPrimitive } from "../isPrimitive/index.ts";
+import { NORMALISE, RAW } from "../parsers/index.ts";
+
+export interface LogContext<Levels extends string[] = string[]> {
+  level: Levels[number];
+  device: (this: LogContext, message?: any, ...optionalParams: any[]) => void;
+  parser: ((input: any) => string) | false;
+  fields: Record<string, any>;
+  dynamicFields: () => Record<string, any>;
+}
 
 /**
  * Log to the configured device, using parser, with enrichment. Filter according to level.
  */
-export function log(subject: any, enrichment = {}): any {
+export function log(this: LogContext, subject: any, enrichment = {}): any {
   const record: Record<string, any> = {};
   const context = {
     level: this.level,
@@ -20,7 +28,7 @@ export function log(subject: any, enrichment = {}): any {
     Object.assign(
       record,
       { ...subject },
-      ...ERROR_FIELDS.map((field) => ({ [field]: subject[field] })),
+      ...ERROR_FIELDS.map((field) => ({ [field]: (subject as any)[field] })),
     );
     record.cause = getCause(subject);
   } else if (Array.isArray(subject)) {
@@ -41,13 +49,13 @@ export function log(subject: any, enrichment = {}): any {
     level: this.level,
   });
 
-  return this.device.call(context, output);
+  return this.device.call(context as LogContext, output);
 }
 
 /**
  * Use the appropriate parser for the logger
  */
-function getParser({ parser }: { parser: Function | boolean }): Function {
+function getParser({ parser }: LogContext): (input: any) => string | false {
   if (parser === false) {
     return RAW;
   }

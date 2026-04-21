@@ -1,5 +1,5 @@
-import { isPrimitive } from "../isPrimitive";
-import { stringify } from "../stringify";
+import { isPrimitive } from "../isPrimitive/index.ts";
+import { stringify } from "../stringify/index.ts";
 
 /**
  * Return input as is

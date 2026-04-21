@@ -1,42 +1,69 @@
-import { log } from "../log";
-import { NORMALISE } from "../parsers";
-import { LEVELS } from "../levels";
+import { log } from "../log/index.ts";
+import type { LogContext } from "../log/index.ts";
+import { NORMALISE } from "../parsers/index.ts";
+import { LEVELS } from "../levels/index.ts";
+import type { DefaultLevels } from "../levels/index.ts";
+
+type LoggerLevelMethod = (
+  subject: any,
+  enrichment?: Record<string, any>,
+) => any;
+
+type LoggerPublicShape<Levels extends string[]> = {
+  [K in Levels[number]]: LoggerLevelMethod;
+} & {
+  toString: () => string;
+  level: Levels[number];
+  levels: Levels;
+  device: (this: LogContext, message?: any, ...optionalParams: any[]) => void;
+};
+
+type LoggerOptions<Levels extends string[]> = {
+  levels?: Levels;
+  level?: Levels[number];
+  device?: (this: LogContext, message?: any, ...optionalParams: any[]) => void;
+  parser?: false | ((input: any) => string);
+  fields?: Record<string, any>;
+  dynamicFields?: () => Record<string, any>;
+};
+
+type LoggerConstructor = {
+  new <Levels extends string[] = DefaultLevels[]>(
+    options?: LoggerOptions<Levels>,
+  ): LoggerPublicShape<Levels>;
+};
+
+export type Logger<Levels extends string[] = DefaultLevels[]> =
+  LoggerPublicShape<Levels>;
 
 /**
- * Logger class. Can be used to create multiple loggers with different settings.
+ * Logger implementation. Can be used to create multiple loggers with different settings.
  */
-export class Logger {
-  #levels: string[] | readonly string[] = LEVELS;
+const LoggerClass = class Logger<Levels extends string[] = DefaultLevels[]> {
+  #levels!: Levels;
   #minimal: number = 0;
-  #device: Function = console.log;
-  #parser: false | Function = NORMALISE;
-  #fields: Record<string, any>;
-  #dynamicFields: () => Record<string, any>;
-  [key: string]: any;
+  #device: (this: LogContext, message?: any, ...optionalParams: any[]) => void =
+    console.log;
+  #parser: false | ((input: any) => string) = NORMALISE;
+  #fields!: Record<string, any>;
+  #dynamicFields!: () => Record<string, any>;
   constructor({
-    levels = LEVELS,
+    levels = LEVELS as Levels,
     level = levels.at(0),
     device = console.log,
     parser = NORMALISE,
     fields = {},
     dynamicFields = () => ({}),
-  }: {
-    levels?: string[] | readonly string[];
-    level?: string;
-    device?: (message?: any, ...optionalParams: any[]) => void;
-    parser?: (input: any) => string;
-    fields?: Record<string, any>;
-    dynamicFields?: () => Record<string, any>;
-  } = {}) {
+  }: LoggerOptions<Levels> = {}) {
     this.#setDevice(device);
     this.#setLevels(levels);
-    this.#setLevel(level);
+    this.#setLevel(level!);
     this.#setParser(parser);
     this.#setFields(fields);
     this.#setDynamicFields(dynamicFields);
 
     return new Proxy(this, {
-      get(logger: Logger, prop: string | symbol) {
+      get(logger: Logger<Levels>, prop: string | symbol) {
         if (typeof prop !== "string") {
           return;
         }
@@ -57,18 +84,20 @@ export class Logger {
                 )}]. Instead got [${prop}].`,
               );
             }
-            return levels.indexOf(prop) < logger.#minimal
-              ? () => Promise.resolve(undefined)
-              : log.bind({
-                  level: prop,
-                  device,
-                  parser: logger.#parser,
-                  fields: logger.#fields,
-                  dynamicFields: logger.#dynamicFields,
-                });
+
+            // If the level is below the minimal level, return a no-op function
+            if (levels.indexOf(prop) < logger.#minimal)
+              return () => Promise.resolve(undefined);
+            return log.bind({
+              level: prop,
+              device,
+              parser: logger.#parser,
+              fields: logger.#fields,
+              dynamicFields: logger.#dynamicFields,
+            } as LogContext);
         }
       },
-      set(logger: Logger, prop: string | symbol, value): boolean {
+      set(logger: any, prop: string | symbol, value): boolean {
         if (Object.isFrozen(logger)) {
           return true;
         }
@@ -90,10 +119,10 @@ export class Logger {
         }
         return true;
       },
-    });
+    }) as this;
   }
 
-  #setLevel(level: string): void {
+  #setLevel(level: Levels[number]): void {
     const index = this.#levels.indexOf(level);
     if (index === -1) {
       throw new RangeError(
@@ -105,7 +134,7 @@ export class Logger {
     this.#minimal = index;
   }
 
-  #setLevels(levels: string[] | readonly string[]): void {
+  #setLevels(levels: Levels | readonly string[]): void {
     if (!Array.isArray(levels)) {
       throw new TypeError(
         `levels must be an array, instead got ${typeof levels} (${levels})`,
@@ -123,7 +152,7 @@ export class Logger {
     this.#levels = levels;
   }
 
-  #setParser(parser: false | Function): void {
+  #setParser(parser: false | ((input: any) => string)): void {
     if (parser !== false && typeof parser !== "function") {
       throw new TypeError(
         `parser must be a function or the boolean "false", instead got ${typeof parser} (${parser})`,
@@ -132,7 +161,9 @@ export class Logger {
     this.#parser = parser;
   }
 
-  #setDevice(device: Function): void {
+  #setDevice(
+    device: (this: LogContext, message?: any, ...optionalParams: any[]) => void,
+  ): void {
     if (typeof device !== "function") {
       throw new TypeError(
         `device must be a function, instead got ${typeof device} (${device})`,
@@ -158,4 +189,6 @@ export class Logger {
     }
     this.#dynamicFields = dynamicFields;
   }
-}
+};
+
+export const Logger = LoggerClass as unknown as LoggerConstructor;

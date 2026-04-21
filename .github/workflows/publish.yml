@@ -1,17 +1,16 @@
 name: Publish
+permissions:
+  contents: write
 on:
   - push
 jobs:
   publish:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version:
-          - "16"
-          - "18"
-          - "20"
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: latest
       - run: npm i
       - run: npm t
       - run: npm run format
@@ -20,7 +19,7 @@ jobs:
           USERNAME: ${{ github.actor }}
           BRANCH: ${{ github.ref_name }}
           REPO: ${{ github.repository }}
-          TOKEN: ${{ secrets.GH_TOKEN }}
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           if [ "$(git diff --quiet && echo 0 || echo $?)" -gt 0 ]; then
             git config --global user.email "${USERNAME}@users.noreply.github.com" --replace-all
@@ -31,7 +30,7 @@ jobs:
             exit 1
           fi
       - name: Publish
-        if: github.ref == 'refs/heads/main' && matrix.node-version == '20'
+        if: github.ref == 'refs/heads/main'
         run: |
           npm run build
           echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
