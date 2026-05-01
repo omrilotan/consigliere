@@ -9,7 +9,7 @@ type LoggerLevelMethod = (
   enrichment?: Record<string, any>,
 ) => any;
 
-type LoggerPublicShape<Levels extends string[]> = {
+type LoggerPublicShape<Levels extends string[] | readonly string[]> = {
   [K in Levels[number]]: LoggerLevelMethod;
 } & {
   toString: () => string;
@@ -18,7 +18,7 @@ type LoggerPublicShape<Levels extends string[]> = {
   device: (this: LogContext, message?: any, ...optionalParams: any[]) => void;
 };
 
-type LoggerOptions<Levels extends string[]> = {
+type LoggerOptions<Levels extends string[] | readonly string[]> = {
   levels?: Levels;
   level?: Levels[number];
   device?: (this: LogContext, message?: any, ...optionalParams: any[]) => void;
@@ -28,7 +28,7 @@ type LoggerOptions<Levels extends string[]> = {
 };
 
 type LoggerConstructor = {
-  new <Levels extends string[] = DefaultLevels[]>(
+  new <Levels extends string[] | readonly string[] = DefaultLevels[]>(
     options?: LoggerOptions<Levels>,
   ): LoggerPublicShape<Levels>;
 };

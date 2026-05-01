@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 2.1.0
+
+- Support Levels as **readonly** list
+
 ## 2.0.0
 
 - New typescript signature adds the Levels to the Logger class signature
